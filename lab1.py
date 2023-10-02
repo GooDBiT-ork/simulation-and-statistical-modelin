@@ -1,32 +1,48 @@
 import random
 import  matplotlib.pyplot as plt
 import scipy.stats as stats
+import math
 
 # Мультипликативный конгруэнтный метод
-def MCM_RNG(seed, a, m):
-    return (a * seed) % m
+def MCM_RNG(seed, a, m, size):
+    if size==1:
+        return math.ceil(math.fmod(a*seed,m))
+    r=[0 for i in range(size)]
+    r[0]=seed
+    for i in range(1,size):
+        r[i]=math.ceil(math.fmod((a*r[i-1]),m))
+    return r[1:size]
+
+# Линейный конгруэнтный метод
+def LCM_RNG(seed, a, c, m, size):
+    if size==1:
+        return math.ceil(math.fmod(a*seed + c,m))
+    r=[0 for i in range(size)]
+    r[0]=seed
+    for i in range(1,size):
+        r[i]=math.ceil(math.fmod((a*r[i-1] + c),m))
+    return r[1:size]
 
 # Метод Макларена-Марсальи 
 # Датчик 1 - мультипликативный конгруэнтный метод
 # Датчик 2 - линейный конгруэнтный метод   
-def MM_RNG(seed, a, c, m, k):
-    x = MCM_RNG(seed, a, m) # Датчик 1
-    y = (seed*c + 1) % k # Датчик 2
+def MM_RNG(seed, a, c, m, size):
+    x = MCM_RNG(seed, a, m, size) # Датчик 1
+    y = LCM_RNG(seed, a, c, m, size) # Датчик 2
     return x ^ y
 
 a = 29791  
+seed = 29791
 c = 17
 m = 2**31
 k = 128
 n = 1000
 
 # Моделирование МКМ
-seeds = [random.randint(1, m-1) for i in range(n)]
-mkm_sample = [MCM_RNG(seed, a, m) for seed in seeds]
+mkm_sample = MCM_RNG(seed, a, m, n)
 
 # Моделирование Макларена-Марсальи
-seeds = [random.randint(1, m-1) for i in range(n)] 
-mm_sample = [MM_RNG(seed, a, c, m, k) for seed in seeds]
+mm_sample = MM_RNG(seed, a, c, m, n)
 
 # Проверка равномерности МКМ
 mkm_stat, mkm_p = stats.kstest(mkm_sample,'uniform', N=n)
