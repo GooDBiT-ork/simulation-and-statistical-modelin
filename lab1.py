@@ -48,19 +48,20 @@ print('Статистика хи-квадрат для ММ:', mm_chi2)
 print('p-значение хи-квадрат для ММ:', mm_p)
 
 # Диаграмма рассеяния
+plt.subplot (2, 2, 1)
 plt.scatter(range(n), mkm_sample, s=1)
 plt.title('Диаграмма рассеяния для МКМ')
-plt.show()
 
+plt.subplot (2, 2, 2)
 plt.scatter(range(n), mm_sample, s=1)
 plt.title('Диаграмма рассеяния для ММ')
-plt.show()
 
 # Гистограммы
+plt.subplot (2, 2, 3)
 plt.hist(mkm_sample, bins=50)
 plt.title('Гистограмма для МКМ')
-plt.show()
 
+plt.subplot (2, 2, 4)
 plt.hist(mm_sample, bins=50) 
 plt.title('Гистограмма для ММ')
 plt.show()
