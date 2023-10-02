@@ -14,7 +14,6 @@ def MM_RNG(seed, a, c, m, k):
     y = (seed*c + 1) % k # Датчик 2
     return x ^ y
 
-# Параметры
 a = 29791  
 c = 17
 m = 2**31
