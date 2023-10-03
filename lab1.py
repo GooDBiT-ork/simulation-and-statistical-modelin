@@ -47,7 +47,7 @@ for i in range(n):
 print(mcg_sample,'\n')
 print(lcg_sample,'\n')
 print(mmg_sample,'\n')
-
+print('|', mcg_sample.center(10), '|')
 # Проверка равномерности МКМ
 # mkm_stat, mkm_p = stats.kstest(mkm_sample,'uniform', N=n)
 # print('Статистика К-С для МКМ:', mkm_stat)
