@@ -64,6 +64,25 @@ mm_chi2, mm_p = stats.chisquare(mmg_sample)
 print('Статистика хи-квадрат для ММ:', mm_chi2)
 print('p-значение хи-квадрат для ММ:', mm_p)
 
+def test_Hi(arr, t, eps):
+    intervals = {}
+    for i in range(t + 1):
+        intervals[(i / 1000, (i + 1) / 1000)] = 0
+
+    for i in arr:
+        for interval in intervals:
+            if interval[0] <= i and i < interval[1]:
+                intervals[interval] += 1
+
+    expected = len(arr) / t
+
+    chi2 = sum([((intervals[i / 1000, (i + 1) / 1000] - expected) ** 2) / expected for i in range(t)])
+    delt = stats.chi2.ppf(1 - eps, df=t - 1) # (t - 1) число степеней свободы
+    print("хи-квадрат:", chi2)
+    print("Критическое значение:", delt)
+    return chi2 < delt
+print('hi qwerty : ', test_Hi(mcg_sample, n, 0.05))
+print('hi qwerty : ', test_Hi(mmg_sample, n, 0.05))
 # Диаграмма рассеяния
 plt.subplot (2, 2, 1)
 plt.scatter(range(n), mcg_sample, s=1)
