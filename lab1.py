@@ -1,88 +1,84 @@
 import random
 import  matplotlib.pyplot as plt
 import scipy.stats as stats
+from scipy.stats import chi2
 import math
+import numpy as np
 
+def MMG(b_array, c_array, k):
+    a = []
+    V = list(b_array[0:k])
+    for i in range(n):
+        s = (int)(c_array[i]*k)
+        a.append(V[s])
+        if (i + k < n):
+            V[s] = b_array[i + k]
+    return a
 # Мультипликативный конгруэнтный метод
-def MCG(a, x, M, length):
-    result = []
-    for _ in range(length):
-        rd = (a * x) % M
-        x = rd
-        result.append(x / M)
-    return result
-# Линейный конгруэнтный метод
-def LCG(a, x, c, M, length):
-    result = []
-    for _ in range(length):
-        rd = (a * x + c) % M
-        x = rd
-        result.append(x / M)
-    return result
+def MCG(beta, alpha, M, n):
+    a = []
+    alpha = []
+    alpha.append(beta)
+    for i in range(1,n+1):
+        alpha.append((beta*alpha[i-1])%M)
+        a.append(alpha[i]/M)
+    return a
 
-# Метод Макларена-Марсальи   
-def MMG(b_array,c_array,k):
-    x = random.choice(b_array)
-    y = random.choice(c_array)
-    j = math.trunc( y * k )
-    if j < 1:
-        j = 1
-    v = b_array[:k]
-    Result = v[j]
-    v[j] = x
-    return Result
+def RG(n):
+    a = []
+    for i in range(n):
+        a.append(random.random())
+    return a
 
-a = 29791  
-x0 = 29791
-c = 0
+
+
+beta = 29791  
+alpha = 29791
 m = 2**31
 k = 128
 n = 1000
 
-mcg_sample = MCG(a,x0,m,n)
-lcg_sample = LCG(a,x0,c,m,n)
-mmg_sample = []
-for i in range(n):
-    mmg_sample.append(MMG(mcg_sample,lcg_sample,k))
+mcg_sample = MCG(beta,alpha,m,n)
+rg_sample = RG(n)
+mmg_sample = MMG(mcg_sample,rg_sample,k)
+
+#критерий Пирсона
+def Pirson(a_, L): #L-величина интервала
+    a = list(a_[:])
+    a.sort()
+    n = len(a)
+    i = 0
+    count = 0
+    xi2 = 0
+    for l in range(1,L+1):
+        count = 0
+        while ((a[i] < float(l/L)) and (i<n-1)):
+            i+=1
+            count+=1
+        xi2+=pow(count - float(n/L), 2)/n*L
+    return xi2
+
+def Kolmogorov(a_):
+    a = list(a_[:])
+    a.sort()
+    n = len(a)
+    Dn = 0
+    tmp = 0
+    for i in range(n):
+        tmp = abs(float(i+1)/n - a[i])
+        if(tmp > Dn):
+            Dn = tmp
+    return math.sqrt(n)*Dn
+
+print('Pirson for mcg ', Pirson(mcg_sample,10))
+print('Pirson for rg ', Pirson(rg_sample,10))
+print('Pirson for mmg ', Pirson(mmg_sample,10))
+
+print('Kolmogorov for mcg ', Kolmogorov(mcg_sample))
+print('Kolmogorov for rg ', Kolmogorov(rg_sample))
+print('Kolmogorov for mmg ', Kolmogorov(mmg_sample))
 
 
-# Проверка равномерности МКМ
-mcm_stat, mcm_p = stats.kstest(mcg_sample, stats.uniform.cdf)
-print('Статистика К-С для МКМ:', mcm_stat)
-print('p-значение К-С для МКМ:', mcm_p)
-
-mcm_chi2, mcm_p = stats.chisquare(mcg_sample)
-print('Статистика хи-квадрат для МКМ:', mcm_chi2)
-print('p-значение хи-квадрат для МКМ:', mcm_p)
-
-# # Проверка равномерности ММ
-mm_stat, mm_p = stats.kstest(mmg_sample,'uniform', N=n)
-print('Статистика К-С для ММ:', mm_stat) 
-print('p-значение К-С для ММ:', mm_p)
-
-mm_chi2, mm_p = stats.chisquare(mmg_sample)
-print('Статистика хи-квадрат для ММ:', mm_chi2)
-print('p-значение хи-квадрат для ММ:', mm_p)
-
-def test_Hi(arr, t, eps):
-    intervals = {}
-    for i in range(t + 1):
-        intervals[(i / 1000, (i + 1) / 1000)] = 0
-
-    for i in arr:
-        for interval in intervals:
-            if interval[0] <= i and i < interval[1]:
-                intervals[interval] += 1
-
-    expected = len(arr) / t
-
-    chi2 = sum([((intervals[i / 1000, (i + 1) / 1000] - expected) ** 2) / expected for i in range(t)])
-    delt = stats.chi2.ppf(1 - eps, df=t - 1) # (t - 1) число степеней свободы
-    print("хи-квадрат:", chi2)
-    print("Критическое значение:", delt)
-    return chi2 < delt
-print('hi qwerty : ', test_Hi(mcg_sample, n, 0.05))
-print('hi qwerty : ', test_Hi(mmg_sample, n, 0.05))
 # Диаграмма рассеяния
 plt.subplot (2, 2, 1)
 plt.scatter(range(n), mcg_sample, s=1)
@@ -94,10 +90,10 @@ plt.title('Диаграмма рассеяния для MMG')
 
 # Гистограммы
 plt.subplot (2, 2, 3)
-plt.hist(mcg_sample, bins=50)
+plt.hist(mcg_sample, bins=n)
 plt.title('Гистограмма для MCG')
 
 plt.subplot (2, 2, 4)
-plt.hist(mmg_sample, bins=50) 
+plt.hist(mmg_sample, bins=n) 
 plt.title('Гистограмма для MMG')
 plt.show()
