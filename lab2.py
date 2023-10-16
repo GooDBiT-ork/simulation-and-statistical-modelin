@@ -76,7 +76,7 @@ for x in val_geom:
     else:
         freqs_geom[x] = 1
 
-print(f'X2Geom набл =  {(1/p_geom)*sum((i/n-p_geom)**2 for i in freqs_geom.values())} кол-во степеней свободы = {len(freqs_geom)}')
+print(f'X2Geom набл =  {(1/p_geom)*sum((i/n-p_geom)**2 for i in freqs_geom.values())} кол-во степеней свободы = {len(freqs_geom)-3}')
 
 freqs_binom = {}
 for x in val_binom:
@@ -85,5 +85,5 @@ for x in val_binom:
     else:
         freqs_binom[x] = 1
 
-print(f'X2Binom набл =  {(1/p_binom)*sum((i/n-p_binom)**2 for i in freqs_binom.values())} кол-во степеней свободы = {len(freqs_binom)}')
+print(f'X2Binom набл =  {(1/p_binom)*sum((i/n-p_binom)**2 for i in freqs_binom.values())} кол-во степеней свободы = {len(freqs_binom)-3}')
 
