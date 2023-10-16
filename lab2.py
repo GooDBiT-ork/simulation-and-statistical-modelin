@@ -2,6 +2,7 @@
 import random
 import  matplotlib.pyplot as plt
 import math
+import numpy
 
 # Оценка МО
 def get_expectation(val):
@@ -47,12 +48,11 @@ m_binom = 6
 p_binom = 0.75
 
 def gen_binom(m, p):
-    result = list()
     x = 0
     for j in range(m):
         if random.random() < p:
             x += 1
-    result.append(x)
+    result = x
     return result
 
 e_exp_binom = m_binom*p_binom
@@ -62,32 +62,28 @@ print('Несмещенные МО и Д биномиального распре
 
 val_binom = list()
 for i in range(n):
-    val_binom.append(gen_geom(p_geom))
+    val_binom.append(gen_binom(m_binom,p_binom))
     
 e_obs_binom = get_expectation(val_binom)
 d_obs_binom = get_dispersion(val_binom)
 
 print('Истинные значения МО и Д биномиального распределения:\n', 'МО - ',e_obs_binom, '\n','Д - ',d_obs_binom)
 
+freqs_geom = {}
+for x in val_geom:
+    if x in freqs_geom:
+        freqs_geom[x] += 1
+    else:
+        freqs_geom[x] = 1
 
+print(f'X2Geom набл =  {(1/p_geom)*sum((i/n-p_geom)**2 for i in freqs_geom.values())} кол-во степеней свободы = {len(freqs_geom)}')
 
+freqs_binom = {}
+for x in val_binom:
+    if x in freqs_binom:
+        freqs_binom[x] += 1
+    else:
+        freqs_binom[x] = 1
 
-
-plt.subplot (2, 2, 1)
-plt.scatter(range(n), val_geom, s=1)
-plt.title('Диаграмма рассеяния для ГР')
-
-plt.subplot (2, 2, 2)
-plt.scatter(range(n), val_binom, s=1)
-plt.title('Диаграмма рассеяния для БР')
-
-# Гистограммы
-plt.subplot (2, 2, 3)
-plt.hist(val_geom, bins=n)
-plt.title('Гистограмма для ГР')
-
-plt.subplot (2, 2, 4)
-plt.hist(val_binom, bins=n) 
-plt.title('Гистограмма для БР')
-plt.show()
+print(f'X2Binom набл =  {(1/p_binom)*sum((i/n-p_binom)**2 for i in freqs_binom.values())} кол-во степеней свободы = {len(freqs_binom)}')
 
