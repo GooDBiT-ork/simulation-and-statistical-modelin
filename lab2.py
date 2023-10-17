@@ -2,7 +2,9 @@
 import random
 import  matplotlib.pyplot as plt
 import math
-import scipy.stats as sps
+from scipy.stats import chi2
+import scipy.stats as stats
+from scipy.special import comb
 
 # Оценка МО
 def get_expectation(val):
@@ -26,6 +28,7 @@ def get_dispersion(val):
 
 p_geom = 0.7
 n = 1000
+eps = 0.05
 
 def gen_geom(p):
     a = random.random()
@@ -47,13 +50,15 @@ print('Истинные значения МО и Д геометрическог
 m_binom = 6
 p_binom = 0.75
 
+
 def gen_binom(m, p):
-    x = 0
-    for j in range(m):
-        if random.random() < p:
-            x += 1
-    result = x
-    return result
+    x = random.random()
+    if (x < 0):
+        return 0
+    else:
+        return comb(x + m - 1, x)*(p**m)*((1-p)**x)
+
+
 
 e_exp_binom = m_binom*p_binom
 d_exp_binom = m_binom*p_binom*(1-p_binom)
@@ -69,23 +74,42 @@ d_obs_binom = get_dispersion(val_binom)
 
 print('Истинные значения МО и Д биномиального распределения:\n', 'МО - ',e_obs_binom, '\n','Д - ',d_obs_binom)
 
-freqs_geom = {}
-for x in val_geom:
-    if x in freqs_geom:
-        freqs_geom[x] += 1
-    else:
-        freqs_geom[x] = 1
+def chisquare(val,n,p):
+    freqs = {}
+    for x in val:
+        if x in freqs:
+            freqs[x] += 1
+        else:
+            freqs[x] = 1
+    return [(1/p)*sum((i/n-p)**2 for i in freqs.values()),freqs]
 
-print(f'X2Geom набл =  {(1/p_geom)*sum((i/n-p_geom)**2 for i in freqs_geom.values())}')
+print(f'X2Geom набл =  {chisquare(val_geom,n,p_geom)[0]}')
 
-print(f'X2Geom стат = {sps.chi2(df=1000).pdf(val_geom)}')
+print(f'X2Binom набл =  {chisquare(val_binom,n,p_binom)[0]}')
 
-freqs_binom = {}
-for x in val_binom:
-    if x in freqs_binom:
-        freqs_binom[x] += 1
-    else:
-        freqs_binom[x] = 1
+print('X2Geom stat = ', stats.chi2(len(chisquare(val_geom,n,p_geom)[1]) - 1).ppf(1 - eps))
+print('X2Binom stat = ',stats.chi2(len(chisquare(val_binom,n,p_binom)[1]) - 1).ppf(1 - eps))
 
-print(f'X2Binom набл =  {(1/p_binom)*sum((i/n-p_binom)**2 for i in freqs_binom.values())}')
+N = 1000
+count1 = 0
+count2 = 0
+for i in range(N):
+    val1 = []
+    for i in range(n):
+        val1.append(gen_geom(p_geom))
+    val2 = []
+    for i in range(n):
+        val2.append(gen_binom(m_binom,p_binom))
+    if(chisquare(val1,n,p_geom)[0] > stats.chi2(len(chisquare(val1,n,p_geom)[1]) - 1).ppf(1 - eps)):
+        count1+=1
+    if(chisquare(val2,n,p_binom)[0] > stats.chi2(len(chisquare(val2,n,p_binom)[1]) - 1).ppf(1 - eps)):
+        count2+=1
+if(count1/N<0.05):
+    print('Вероятность ошибки I рода стремится к 0.05 для геометрического распределения')
+else:
+    print('Вероятность ошибки I рода превышает 0.05 для геометрического распределения')
 
+if(count2/N<0.05):
+    print('Вероятность ошибки I рода стремится к 0.05 для биномиального распределения')
+else:
+    print('Вероятность ошибки I рода превышает 0.05 для биномиального распределения')
