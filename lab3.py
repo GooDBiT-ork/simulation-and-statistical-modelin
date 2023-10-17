@@ -6,11 +6,6 @@ import random
 import matplotlib.pyplot as plt
 
 
-# sns.set(rc = {'figure.figsize':(15,8)})
-# sns.set_theme(style='whitegrid', palette='dark:#5A9_r')
-
-np.random.seed(42)
-
 # Критерий Колмогорова
 def ks_test(samples, cdf, alpha=0.05, **kwargs):
     n = len(samples)
@@ -33,16 +28,16 @@ def ks_test(samples, cdf, alpha=0.05, **kwargs):
         print(f"H0 не принята: {ks_value} >= {critical_value}.")
 
 
-# Генерация выборки на ГММ
+# Генерация выборки
 def generate_samples(generate_sample, n=1000, **kwargs):
     return np.array([generate_sample(**kwargs) for _ in range(n)])
 
 
-# #### нормальное распределение на ГММ и встроенном генераторе
+#Нормальное распределение
 def normal_sample(N=12, loc=0, scale=1):
     sum = 0 
     for i in range(0, N):
-        sum += np.random.rand()
+        sum += random.random()
     return loc + (12 / N) ** 0.5 * (sum - N / 2) * scale
 
 
@@ -66,6 +61,7 @@ print("Несмещенная оценка дисперсии:", normal.var())
 
 ks_test(normal, normal_cdf, loc=m, scale=s)
 
+#Логнормальное распределение
 def lognormal_sample(N=12, loc=0, scale=1):
     sum = 0
     for i in range(0, 12):
@@ -91,7 +87,7 @@ print("Несмещенная оценка дисперсии:", lognormal.var()
 
 ks_test(lognormal, lognormal_cdf, loc=m, scale=s)
 
-# #### Логистическое распределение на ГММ и встроенном генераторе
+#Логистическое распределение
 def logistic_sample(loc=0, scale=1):
     x = random.random()
     return loc + scale * np.log(x / (1 - x))
@@ -113,15 +109,15 @@ print("Несмещенная оценка дисперсии:", logistic.var())
 
 ks_test(logistic, logistic_cdf, loc=mu, scale=k)
 
-plt.subplot (2, 2, 1)
-sns.histplot(normal, kde=True, linewidth=0)
-plt.title('Нормальное распределение')
+# plt.subplot (2, 2, 1)
+# sns.histplot(normal, kde=True, linewidth=0)
+# plt.title('Нормальное распределение')
 
-plt.subplot (2, 2, 2)
-sns.histplot(lognormal, kde=True, linewidth=0)
-plt.title('Логнормальное распределение')
+# plt.subplot (2, 2, 2)
+# sns.histplot(lognormal, kde=True, linewidth=0)
+# plt.title('Логнормальное распределение')
 
-plt.subplot (2, 2, 3)
-sns.histplot(logistic, kde=True, linewidth=0)
-plt.title('Логистическое распределение')
-plt.show()
+# plt.subplot (2, 2, 3)
+# sns.histplot(logistic, kde=True, linewidth=0)
+# plt.title('Логистическое распределение')
+# plt.show()
