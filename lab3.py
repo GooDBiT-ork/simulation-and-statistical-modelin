@@ -3,9 +3,11 @@ import seaborn as sns
 from scipy.stats import kstwobign
 from scipy.special import erf
 import random
+import matplotlib.pyplot as plt
 
-sns.set(rc = {'figure.figsize':(15,8)})
-sns.set_theme(style='whitegrid', palette='dark:#5A9_r')
+
+# sns.set(rc = {'figure.figsize':(15,8)})
+# sns.set_theme(style='whitegrid', palette='dark:#5A9_r')
 
 np.random.seed(42)
 
@@ -64,9 +66,6 @@ print("Несмещенная оценка дисперсии:", normal.var())
 
 ks_test(normal, normal_cdf, loc=m, scale=s)
 
-sns.histplot(normal, kde=True, linewidth=0)
-
-
 def lognormal_sample(N=12, loc=0, scale=1):
     sum = 0
     for i in range(0, 12):
@@ -92,9 +91,6 @@ print("Несмещенная оценка дисперсии:", lognormal.var()
 
 ks_test(lognormal, lognormal_cdf, loc=m, scale=s)
 
-sns.histplot(lognormal, kde=True, linewidth=0)
-
-
 # #### Логистическое распределение на ГММ и встроенном генераторе
 def logistic_sample(loc=0, scale=1):
     x = random.random()
@@ -117,4 +113,15 @@ print("Несмещенная оценка дисперсии:", logistic.var())
 
 ks_test(logistic, logistic_cdf, loc=mu, scale=k)
 
+plt.subplot (2, 2, 1)
+sns.histplot(normal, kde=True, linewidth=0)
+plt.title('Нормальное распределение')
+
+plt.subplot (2, 2, 2)
+sns.histplot(lognormal, kde=True, linewidth=0)
+plt.title('Логнормальное распределение')
+
+plt.subplot (2, 2, 3)
 sns.histplot(logistic, kde=True, linewidth=0)
+plt.title('Логистическое распределение')
+plt.show()

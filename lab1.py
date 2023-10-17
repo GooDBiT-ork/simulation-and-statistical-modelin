@@ -6,6 +6,7 @@ import math
 import numpy as np
 
 def MMG(b_array, c_array, k):
+    n = len(b_array)
     a = []
     V = list(b_array[0:k])
     for i in range(n):
@@ -16,13 +17,12 @@ def MMG(b_array, c_array, k):
     return a
 # Мультипликативный конгруэнтный метод
 def MCG(beta, alpha, M, n):
-    a = []
-    alpha = []
-    alpha.append(beta)
-    for i in range(1,n+1):
-        alpha.append((beta*alpha[i-1])%M)
-        a.append(alpha[i]/M)
-    return a
+    outSeq = []
+    xCurr = alpha
+    for i in range(n):
+        xCurr = (beta * xCurr) % M
+        outSeq.append(xCurr / M)
+    return outSeq
 
 def RG(n):
     a = []
@@ -42,8 +42,7 @@ mcg_sample = MCG(beta,alpha,m,n)
 rg_sample = RG(n)
 mmg_sample = MMG(mcg_sample,rg_sample,k)
 
-#критерий Пирсона
-def Pirson(a_, L): #L-величина интервала
+def Pirson(a_, L):
     a = list(a_[:])
     a.sort()
     n = len(a)
