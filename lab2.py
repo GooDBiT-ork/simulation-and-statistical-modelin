@@ -4,7 +4,8 @@ import  matplotlib.pyplot as plt
 import math
 from scipy.stats import chi2
 import scipy.stats as stats
-from scipy.special import comb
+from random import random, uniform
+from math import log
 
 # Оценка МО
 def get_expectation(val):
@@ -26,13 +27,17 @@ def get_dispersion(val):
     d /= (len(val) - 1)
     return d
 
-p_geom = 0.7
+p_geom = 0.77
 n = 1000
 eps = 0.05
 
 def gen_geom(p):
-    a = random.random()
-    return math.floor(math.log(a) / math.log(1 - p)) + 1
+    counter = 0
+    while (1 if random() < p else 0) != 1:
+        counter += 1
+    return counter
+
+#math.floor(math.log(a) / math.log(1 - p)) + 1
 
 e_exp_geom = 1 / p_geom
 d_exp_geom = (1 - p_geom) / (p_geom**2)
@@ -52,13 +57,16 @@ p_binom = 0.75
 
 
 def gen_binom(m, p):
-    x = random.random()
-    if (x < 0):
-        return 0
-    else:
-        return comb(x + m - 1, x)*(p**m)*((1-p)**x)
-
-
+    q = 1 - p
+    c, r = p / q, uniform(0, 1)
+    p = pow(q, m)
+    x = 0
+    r -= p
+    while r >= 0:
+        x += 1
+        p *= c * (m + 1 - x) / x
+        r -= p
+    return x
 
 e_exp_binom = m_binom*p_binom
 d_exp_binom = m_binom*p_binom*(1-p_binom)
@@ -81,13 +89,13 @@ def chisquare(val,n,p):
             freqs[x] += 1
         else:
             freqs[x] = 1
-    return [(1/p)*sum((i/n-p)**2 for i in freqs.values()),freqs]
+    return [sum(((i-n*(p * ((1 - p) ** i)))**2)*(p * ((1 - p) ** i)/n) for i in freqs.values()),freqs]
 
 print(f'X2Geom набл =  {chisquare(val_geom,n,p_geom)[0]}')
 
 print(f'X2Binom набл =  {chisquare(val_binom,n,p_binom)[0]}')
 
-print('X2Geom stat = ', stats.chi2(len(chisquare(val_geom,n,p_geom)[1]) - 1).ppf(1 - eps))
+print('X2Geom stat = ', stats.chi2(len(chisquare(val_geom,n,p_geom)[1])-1).ppf(1 - eps))
 print('X2Binom stat = ',stats.chi2(len(chisquare(val_binom,n,p_binom)[1]) - 1).ppf(1 - eps))
 
 N = 1000
