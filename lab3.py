@@ -8,7 +8,7 @@ from scipy.stats import chi2
 import scipy.stats as stats
 
 
-pieces = 9
+pieces = 10
 eps = 0.05
 _N = 100
 # Критерий Пирсона
@@ -169,15 +169,15 @@ for i in range(_N):
     if(p_res[0]>p_res[1]):
         count2+=1
 print('Ошибка первого рода К = ', count1/_N, 'Ошибка первого рода P = ', count2/_N)
-# plt.subplot (2, 2, 1)
-# sns.histplot(normal, kde=True, linewidth=0)
-# plt.title('Нормальное распределение')
+plt.subplot (2, 2, 1)
+sns.histplot(normal, kde=True, linewidth=0)
+plt.title('Нормальное распределение')
 
-# plt.subplot (2, 2, 2)
-# sns.histplot(lognormal, kde=True, linewidth=0)
-# plt.title('Логнормальное распределение')
+plt.subplot (2, 2, 2)
+sns.histplot(lognormal, kde=True, linewidth=0)
+plt.title('Логнормальное распределение')
 
-# plt.subplot (2, 2, 3)
-# sns.histplot(logistic, kde=True, linewidth=0)
-# plt.title('Логистическое распределение')
-# plt.show()
+plt.subplot (2, 2, 3)
+sns.histplot(logistic, kde=True, linewidth=0)
+plt.title('Логистическое распределение')
+plt.show()
