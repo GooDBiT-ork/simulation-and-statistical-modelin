@@ -1,50 +1,68 @@
-import math 
-from random import uniform
+
+import random
 import scipy.integrate as integrate
 import numpy as np
 import  matplotlib.pyplot as plt
 
 def function_a(x):
-    return x / math.sqrt(1 - 4 * x**2)
+    return (np.exp(x))*np.log(x)
 
+def function_b(x,y):
+    return np.exp(-(x*x+y*y)/2)*np.log(1+(2*x-3*y)**2)
 
-def function_b(x):
-    return (x * np.log(x)) / (1 + x ** 3)
-
+def function_b2(x,y):
+    return np.log(1+(2*x-3*y)**2)
 
 def integral_a(function, a, b, n):
-    return sum([function(uniform(a, b)) for _ in range(n)]) * (b - a) / n
+    return sum([function(a+(b-a)*random.random()) for _ in range(n)]) * (b - a) / n
 
+def generate_samples(generate_sample, n=1000, **kwargs):
+    return np.array([generate_sample(**kwargs) for _ in range(n)])
 
-def integral_b(function, n):
+def normal_sample(N=12, loc=0, scale=1):
+    sum = 0 
+    for i in range(0, N):
+        sum += random.random()
+    return loc + (12 / N) ** 0.5 * (sum - N / 2) * scale
+
+def integral_b(function,n):
+    m = 0
+    s2 = 1
+    s = s2 ** 0.5
+    normalx = []
+    normaly = []
+    temp = 0
     result = 0
-    temp = 1
-    left = 0
-
-    while abs(temp) > 10 ** (-7):
-        temp = 0
-        for _ in range(n):
-            c_dot = uniform(left, left + 1)
-            temp += function(c_dot)
-        temp /= n
+    for i in range(n):
+        normalx = generate_samples(normal_sample, n, loc=m, scale=s)
+        normaly = generate_samples(normal_sample, n, loc=m, scale=s)
+        temp = 2*(np.pi)*function(normalx[i],normaly[i])
         result += temp
-        left += 1
-      
-    return result
+    return result/n
 
-N = 1000000
+
+N = 10000
 mc1 = list()
-math1 = list()
-for n in range(100000,N,5000):
-    mc1.append(integral_a(function_a, 0, 0.5, n))
-    math1.append(integrate.quad(function_a, 0, 0.5)[0])
+I1 = integrate.quad(function_a, 1, 3)[0]
+math1 = [I1 for _ in range(1,N)]
+for n in range(1,N,10):
+    mc1.append(integral_a(function_a, 1, 3, n))
+    
+mc2 = list() 
+I2 = integrate.dblquad(function_b, -np.inf, np.inf, lambda x : -np.inf,lambda x : np.inf)[0]
+math2 = [I2 for _ in range(1,N)] 
+for n in range(1,N,100):
+    mc2.append(integral_b(function_b2,n))
 
-
-plt.scatter(range(100000,N,5000),mc1,s=1)
-plt.title('I1_imp')
+plt.scatter(range(1,N,100),math2,s=1)
+plt.scatter(range(1,N,100),mc2,s=1)
+plt.title('I2')
 plt.show()
 
-# plt.scatter(range(1,N),math1,s=1)
-# plt.title('I1_imp')
-# plt.show()
+plt.scatter(range(100000,N,10000),math1,s=1)
+plt.scatter(range(100000,N,10000),mc1,s=1)
+plt.title('I1')
+plt.show()
+
+
 
