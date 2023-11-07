@@ -41,26 +41,26 @@ def integral_b(function,n):
     return result/n
 
 
-N = 10000
+N = 1000
 mc1 = list()
 I1 = integrate.quad(function_a, 1, 3)[0]
 math1 = [I1 for _ in range(1,N)]
-for n in range(1,N,10):
+for n in range(1,N):
     mc1.append(integral_a(function_a, 1, 3, n))
     
 mc2 = list() 
 I2 = integrate.dblquad(function_b, -np.inf, np.inf, lambda x : -np.inf,lambda x : np.inf)[0]
 math2 = [I2 for _ in range(1,N)] 
-for n in range(1,N,100):
+for n in range(1,N):
     mc2.append(integral_b(function_b2,n))
 
-plt.scatter(range(1,N,100),math2,s=1)
-plt.scatter(range(1,N,100),mc2,s=1)
+plt.scatter(range(1,N),math2,s=1)
+plt.scatter(range(1,N),mc2,s=1)
 plt.title('I2')
 plt.show()
 
-plt.scatter(range(100000,N,10000),math1,s=1)
-plt.scatter(range(100000,N,10000),mc1,s=1)
+plt.scatter(range(1,N),math1,s=1)
+plt.scatter(range(1,N),mc1,s=1)
 plt.title('I1')
 plt.show()
 
