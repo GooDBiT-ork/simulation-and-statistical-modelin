@@ -78,21 +78,21 @@ print('Kolmogorov for rg ', Kolmogorov(rg_sample))
 print('Kolmogorov for mmg ', Kolmogorov(mmg_sample))
 
 
-# Диаграмма рассеяния
-plt.subplot (2, 2, 1)
-plt.scatter(range(n), mcg_sample, s=1)
-plt.title('Диаграмма рассеяния для MCG')
+# # Диаграмма рассеяния
+# plt.subplot (2, 2, 1)
+# plt.scatter(range(n), mcg_sample, s=1)
+# plt.title('Диаграмма рассеяния для MCG')
 
-plt.subplot (2, 2, 2)
-plt.scatter(range(n), mmg_sample, s=1)
-plt.title('Диаграмма рассеяния для MMG')
+# plt.subplot (2, 2, 2)
+# plt.scatter(range(n), mmg_sample, s=1)
+# plt.title('Диаграмма рассеяния для MMG')
 
-# Гистограммы
-plt.subplot (2, 2, 3)
-plt.hist(mcg_sample, bins=n)
-plt.title('Гистограмма для MCG')
+# # Гистограммы
+# plt.subplot (2, 2, 3)
+# plt.hist(mcg_sample, bins=n)
+# plt.title('Гистограмма для MCG')
 
-plt.subplot (2, 2, 4)
-plt.hist(mmg_sample, bins=n) 
-plt.title('Гистограмма для MMG')
-plt.show()
+# plt.subplot (2, 2, 4)
+# plt.hist(mmg_sample, bins=n) 
+# plt.title('Гистограмма для MMG')
+# plt.show()

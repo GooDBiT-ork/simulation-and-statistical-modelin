@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-import scipy.integrate as integrate
 from random import uniform
 from scipy.linalg import eigvals,solve
 
