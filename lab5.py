@@ -3,16 +3,6 @@ from random import uniform
 from scipy.linalg import eigvals,solve
 
 
-
-def check_matrix(matrix):
-    data = []
-    for eigval in eigvals(matrix):
-        eigval_modulo = abs(eigval)
-        assert eigval_modulo < 1, 'modulo > 1'
-        data.append([np.round(eigval, 2), np.round(abs(eigval), 2)])
-    return data
-
-
 def solve(size, chain_length, matrix,f):
     m = size * 1000 
     
@@ -39,9 +29,8 @@ def solve(size, chain_length, matrix,f):
 
     return ksi.mean(axis=0)
 
-matrix = [[-0.2,1.4,0.7],[0.9,0.3,1.2],[1.4,1.0,-0.4]]
-f = [1,2,-2]
-f = np.array(f)
-check_data = check_matrix(matrix)
-print(check_data)
-print(solve(3, 100, matrix,f))
+matrix = [[1.2,-0.4,0.3],[0.1,0.7,-0.2],[-0.4,0,1.4]]
+f = np.array([1,2,-2])
+
+print(solve(3, 1000, matrix,f))
+print("Точное решение: ", np.linalg.solve(matrix, f))
