@@ -1,17 +1,27 @@
 import numpy as np
-from random import uniform
-from scipy.linalg import eigvals,solve
+from scipy.linalg import eigvals, solve
 
 
-def solve(size, chain_length, matrix,f):
-    m = size * 1000 
+
+def check_matrix(matrix):
+    data = []
+    for eigval in eigvals(A):
+        eigval_modulo = abs(eigval)
+        assert eigval_modulo < 1, 'modulo > 1'
+        data.append([np.round(eigval, 2), np.round(abs(eigval), 2)])
+    return data
+
+
+
+def solve(size, chain_length, matrix):
+    m = size*chain_length
     
     h = np.eye(size) 
     pi = np.ones_like(f) * (1.0 / size) # Вектор вероятностей начальных состояний цепи Маркова
     P = np.array(np.ones_like(matrix)) * (1 / size) # Матрица переходов
     
     ksi = np.zeros((m, size), dtype=float)
-    idxs = np.array(np.random.rand(m, chain_length) // (1 / size), dtype=int)
+    idxs = np.array(np.random.rand( m,chain_length) // (1 / size), dtype=int)
     Q = np.zeros((m, chain_length, size), dtype=float)
 
     for j in range(m):
@@ -29,8 +39,13 @@ def solve(size, chain_length, matrix,f):
 
     return ksi.mean(axis=0)
 
-matrix = [[1.2,-0.4,0.3],[0.1,0.7,-0.2],[-0.4,0,1.4]]
-f = np.array([1,2,-2])
+A = [[1, 2], [3, 4]]
 
-print(solve(3, 1000, matrix,f))
-print("Точное решение: ", np.linalg.solve(matrix, f))
+f = [1, 2]
+f = np.array(f)
+print('Точное решение : ')
+print(np.linalg.solve(A, f))
+
+# check_data = check_matrix(A)
+print('Решение СЛАУ методуом Монте-Карло')
+print(solve(2, 100, A))
