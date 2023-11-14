@@ -1,4 +1,3 @@
-
 import random
 import scipy.integrate as integrate
 import numpy as np
@@ -41,7 +40,7 @@ def integral_b(function,n):
     return result/n
 
 
-N = 10000
+N = 1000
 mc1 = list()
 I1 = integrate.quad(function_a, 1, 3)[0]
 math1 = [I1 for _ in range(1,N)]
