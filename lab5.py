@@ -1,28 +1,60 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import solve
 
-A = np.array([[0.1, 0.2, 0.3], 
-              [0.2, 0.2, 0.1],
-              [0.1, 0.1, 0]])
+# Ваша система уравнений
+A = np.array([[1.2, -0.4, 0.3], [0.1, 0.7, -0.2], [-0.4, 0.0, 1.4]])
+f = np.array([1, 2, -2])
 
-f = np.array([1, 2, 3])
+# Решение системы уравнений с помощью встроенной функции
+sol_scipy = solve(A, f)
 
-# Начальное приближение   
-x0 = np.zeros(3) 
+# Метод Монте-Карло
+def monte_carlo(A, f, N_chain, N_iter):
+    n = len(f)
+    x = np.zeros(n)
+    Q = np.tril(A)
+    R = A - Q
+    for _ in range(N_chain):
+        x_temp = np.zeros(n)
+        for _ in range(N_iter):
+            x_temp = np.dot(np.linalg.inv(Q), f - np.dot(R, x_temp))
+        x += x_temp
+    return x / N_chain
 
-# Параметры моделирования
-n_iter = 10000
-transition_prob = 0.5*np.ones((3,3)) + 0.5*np.eye(3)
+# Параметры для метода Монте-Карло
+N_chain = 100
+N_iter = 1000
 
-for i in range(n_iter):
-    x = np.random.choice(range(3), p=transition_prob[x0]) 
-    w = f - np.dot(A, x)
-    x0 = x
+# Решение системы уравнений методом Монте-Карло
+sol_mc = monte_carlo(A, f, N_chain, N_iter)
 
-x_mc = np.average(x, weights=w)
+# Сравнение решений
+print("Решение, полученное с помощью встроенной функции:", sol_scipy)
+print("Решение, полученное с помощью метода Монте-Карло:", sol_mc)
 
-# Точное решение
-from numpy.linalg import solve
-x_exact = solve(A, f)
+# График зависимости точности решения от длины цепи Маркова
+errors = []
+N_iters = range(100, 2000, 100)
+for Ni in N_iters:
+    sol_mc_i = monte_carlo(A, f, N_chain, Ni)
+    error = np.linalg.norm(sol_scipy - sol_mc_i)
+    errors.append(error)
+plt.figure()
+plt.plot(N_iters, errors)
+plt.xlabel('Длина цепи Маркова')
+plt.ylabel('Ошибка')
+plt.title('Зависимость точности решения от длины цепи Маркова')
+plt.show()
 
-print(x_mc)
-print(x_exact)
+
+# # Построение графика
+# plt.figure(figsize=(10, 6))
+# plt.plot(chain_lengths, errors, marker='o')
+# plt.title('Зависимость точности решения от длины цепи Маркова')
+# plt.xlabel('Длина цепи Маркова')
+# plt.ylabel('Ошибка')
+# plt.grid(True)
+# plt.show()
+
+

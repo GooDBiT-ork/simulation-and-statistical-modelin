@@ -12,14 +12,6 @@ if not ctypes.windll.shell32.IsUserAnAdmin():
     print('Запуск от имени администратора')
     win32api.ShellExecute(0, 'runas', sys.executable, __file__, None, 1)
     
-
-# for proc in psutil.process_iter():
-#     try:
-#         print(proc.cwd())
-#         print(proc.exe())
-#     except psutil.AccessDenied:
-#         continue
-    
 config_file = Path('config.json')
 
 if not config_file.exists():
@@ -37,7 +29,8 @@ if not blacklisted_apps:
 
 while True:
     for process in blacklisted_apps:
-        os.system(f'taskkill /f /im {os.path.basename(process)}')
-        print(f'Процесс {os.path.basename(process)} завершен')
+        if os.path.basename(process) in (p.name() for p in psutil.process_iter()):
+            os.system(f'taskkill /f /im {os.path.basename(process)}')
+            print(f'Процесс {os.path.basename(process)} завершен')
 
     time.sleep(5)
